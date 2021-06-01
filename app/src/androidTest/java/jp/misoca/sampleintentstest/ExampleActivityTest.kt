@@ -23,15 +23,32 @@ class ExampleActivityTest {
 
     @Test
     fun testEdit() {
-        Espresso.onView(ViewMatchers.withId(R.id.txt_text)).perform(
-            ViewActions.typeText("Hello World")
-        )
+        // メイン画面で実行される
         Espresso.onView(ViewMatchers.withText("編集")).perform(
             ViewActions.click()
         )
-        Espresso.onView(ViewMatchers.withId(R.id.txt_edit)).check(
+
+        // 編集画面で実行される
+        // 初期表示の確認
+        Espresso.onView(ViewMatchers.withId(R.id.edit_text)).check(
             ViewAssertions.matches(
-                ViewMatchers.withText("Hello World")
+                ViewMatchers.withText("Hello")
+            )
+        )
+        // EditTextに入力する
+        Espresso.onView(ViewMatchers.withId(R.id.edit_text)).perform(
+            ViewActions.replaceText("Bye!")
+        )
+        // 保存ボタンをクリックする
+        Espresso.onView(ViewMatchers.withId(R.id.btn_save)).perform(
+            ViewActions.click()
+        )
+
+        // メイン画面で実行される
+        // 編集結果が反映されている
+        Espresso.onView(ViewMatchers.withId(R.id.txt_text)).check(
+            ViewAssertions.matches(
+                ViewMatchers.withText("Bye!")
             )
         )
     }
