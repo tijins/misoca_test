@@ -1,10 +1,15 @@
 package jp.misoca.sampleintentstest
 
+import android.app.Activity
+import android.app.Instrumentation
 import android.content.ComponentName
 import android.content.Intent
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -38,6 +43,36 @@ class ExampleIntentsTest {
             )
         )
         assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello")
+    }
+
+    @Test
+    fun testOnEdit() {
+        // intendingを使用して、編集画面をスタブ化する
+        val resultData = Intent().apply {
+            putExtra(Intent.EXTRA_TEXT, "Bye!")
+        }
+        val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
+
+        intending(
+            IntentMatchers.hasComponent(
+                ComponentName(
+                    "jp.misoca.sampleintentstest",
+                    "jp.misoca.sampleintentstest.EditActivity"
+                )
+            )
+        ).respondWith(result)
+
+        // intendingされているので、EditActivityの起動後、するにonActivityResultに処理が戻る
+        Espresso.onView(ViewMatchers.withText("編集")).perform(
+            ViewActions.click()
+        )
+
+        //結果をチェック
+        Espresso.onView(ViewMatchers.withId(R.id.txt_text)).check(
+            ViewAssertions.matches(
+                ViewMatchers.withText("Bye!")
+            )
+        )
     }
 
     @Test
