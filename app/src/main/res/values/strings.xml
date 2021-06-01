@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">SampleIntentsTest</string>
+    <string name="main_text_hint">テキストデータ</string>
     <string name="main_edit">編集</string>
     <string name="main_share">共有</string>
+    <string name="edit_save">保存</string>
 </resources>

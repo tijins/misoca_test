@@ -25,9 +25,6 @@ class ExampleIntentsTest {
 
     @Test
     fun testEdit() {
-        Espresso.onView(ViewMatchers.withId(R.id.txt_text)).perform(
-            ViewActions.typeText("Hello World")
-        )
         Espresso.onView(ViewMatchers.withText("編集")).perform(
             ViewActions.click()
         )
@@ -40,14 +37,11 @@ class ExampleIntentsTest {
                 "jp.misoca.sampleintentstest.EditActivity"
             )
         )
-        assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello World")
+        assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello")
     }
-    
+
     @Test
     fun testShare() {
-        Espresso.onView(ViewMatchers.withId(R.id.txt_text)).perform(
-            ViewActions.typeText("Hello World")
-        )
         Espresso.onView(ViewMatchers.withText("共有")).perform(
             ViewActions.click()
         )
@@ -61,6 +55,6 @@ class ExampleIntentsTest {
         val intent = chooser.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)
         assertThat(intent).hasAction(Intent.ACTION_SEND)
         assertThat(intent).hasType("text/plain")
-        assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello World")
+        assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello")
     }
 }

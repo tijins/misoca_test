@@ -2,6 +2,7 @@ package jp.misoca.sampleintentstest
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import jp.misoca.sampleintentstest.databinding.ActivityMainBinding
@@ -10,10 +11,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            onEdit(it.data!!)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        binding.txtText.text = "Hello"
         binding.btnEdit.setOnClickListener {
             openEditActivity()
         }
@@ -26,7 +34,11 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, EditActivity::class.java).apply {
             putExtra(Intent.EXTRA_TEXT, binding.txtText.text.toString())
         }
-        startActivity(intent)
+        editLauncher.launch(intent)
+    }
+
+    private fun onEdit(data: Intent) {
+        binding.txtText.text = data.getStringExtra(Intent.EXTRA_TEXT)
     }
 
     private fun share() {
