@@ -23,17 +23,20 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ExampleIntentsTest {
 
+    // IntentTestRuleを使用します
     @get:Rule
     val activityRule = IntentsTestRule(MainActivity::class.java)
 
+    // バックキーを操作する場合に必要です
     private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     @Test
     fun testEdit() {
-        Espresso.onView(ViewMatchers.withText("編集")).perform(
+        Espresso.onView(ViewMatchers.withId(R.id.btn_edit)).perform(
             ViewActions.click()
         )
 
+        // getIntents()はactivityが起動されてから発行されたIntentのリストを返します
         val intents = Intents.getIntents()
         val intent = intents.first()
         assertThat(intent).hasComponent(
@@ -42,17 +45,20 @@ class ExampleIntentsTest {
                 "jp.misoca.sampleintentstest.EditActivity"
             )
         )
+        // androidx.test.ext.truth.content.IntentSubject.assertThatを使用します
         assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello")
     }
 
     @Test
     fun testOnEdit() {
-        // intendingを使用して、編集画面をスタブ化する
+        // onActivityResultに入力されるダミーデータ
         val resultData = Intent().apply {
             putExtra(Intent.EXTRA_TEXT, "Bye!")
         }
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
 
+        // intendingを使用して、編集画面をスタブ化する
+        // androidx.test.espresso.intent.Intents.intendingを使用します
         intending(
             IntentMatchers.hasComponent(
                 ComponentName(
@@ -62,8 +68,8 @@ class ExampleIntentsTest {
             )
         ).respondWith(result)
 
-        // intendingされているので、EditActivityの起動後、するにonActivityResultに処理が戻る
-        Espresso.onView(ViewMatchers.withText("編集")).perform(
+        // intendingされているので、編集画面が起動せずにonActivityResultが実行される
+        Espresso.onView(ViewMatchers.withId(R.id.btn_edit)).perform(
             ViewActions.click()
         )
 
@@ -77,11 +83,9 @@ class ExampleIntentsTest {
 
     @Test
     fun testShare() {
-        Espresso.onView(ViewMatchers.withText("共有")).perform(
+        Espresso.onView(ViewMatchers.withId(R.id.btn_share)).perform(
             ViewActions.click()
         )
-        // 戻るボタンを押さないと次のテストが開始されない
-        device.pressBack()
 
         // IntentChooserが使用されている
         val chooser = Intents.getIntents().first()
@@ -91,5 +95,8 @@ class ExampleIntentsTest {
         assertThat(intent).hasAction(Intent.ACTION_SEND)
         assertThat(intent).hasType("text/plain")
         assertThat(intent).extras().string(Intent.EXTRA_TEXT).isEqualTo("Hello")
+
+        // バックキーを操作してChooserを閉じる
+        device.pressBack()
     }
 }

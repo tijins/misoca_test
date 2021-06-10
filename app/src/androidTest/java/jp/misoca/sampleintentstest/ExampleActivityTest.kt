@@ -24,7 +24,7 @@ class ExampleActivityTest {
     @Test
     fun testEdit() {
         // メイン画面で実行される
-        Espresso.onView(ViewMatchers.withText("編集")).perform(
+        Espresso.onView(ViewMatchers.withId(R.id.btn_edit)).perform(
             ViewActions.click()
         )
 
